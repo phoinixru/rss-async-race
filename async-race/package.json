@@ -4,12 +4,8 @@
   "description": "Async race task",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode=production --node-env=production",
-    "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production --node-env=production",
-    "watch": "webpack --watch",
-    "serve": "webpack serve"
+    "build": "webpack --config ./webpack.config.js --mode=production --node-env=production",
+    "serve": "webpack serve --open --config ./webpack.config.js --mode=development --node-env=development"
   },
   "author": "Vitaly Kukushkin",
   "license": "ISC",
