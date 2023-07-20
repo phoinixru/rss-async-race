@@ -1,4 +1,5 @@
 import { ElementProps } from '../types';
+import { MAKES, MODELS } from '../config';
 
 type Parent = HTMLElement | Document | DocumentFragment;
 
@@ -36,5 +37,17 @@ const randomByte = (): number => Math.floor(Math.random() * 256);
 const toHex = (number: number): string => number.toString(16).padStart(2, '0');
 const getRandomColor = (): string => `#${Array(3).fill(0).map(randomByte).map(toHex).join('')}`;
 
+const getRandomElement = <T>(array: T[]): T => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+};
+
+const getRandomName = (): string => {
+  const model = getRandomElement(MODELS);
+  const make = getRandomElement(MAKES);
+
+  return `${make} ${model}`;
+};
+
 const { keys, values, assign, entries, fromEntries } = Object;
-export { qs, qsa, elt, keys, values, assign, entries, fromEntries, pause, errorHandler, getRandomColor };
+export { qs, qsa, elt, keys, values, assign, entries, fromEntries, pause, errorHandler, getRandomColor, getRandomName };

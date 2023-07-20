@@ -9,3 +9,36 @@ export const GITHUB_NAME = 'phoinixru';
 export const RSSCHOOL_LINK = 'https://rs.school/js/';
 
 export const MAIN_TITLE = 'Async Race';
+
+export const MAKES = [
+  'Mercedes-Benz',
+  'Audi',
+  'GMC',
+  'Hyundai',
+  'Honda',
+  'Lucid',
+  'Nissan',
+  'Volkswagen',
+  'McLaren',
+  'Subaru',
+  'Toyota',
+  'Lamborghini',
+  'Lincoln',
+];
+
+export const MODELS = [
+  'Accord',
+  'Accent',
+  'Altima',
+  'Atlas',
+  'Blazer',
+  'BRZ',
+  'Carnival',
+  'Cayenne',
+  'Charger',
+  'CLE',
+  'Corolla',
+  'Corsair',
+  'Crown',
+  'CX-9',
+];
