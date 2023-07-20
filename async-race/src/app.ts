@@ -1,4 +1,5 @@
 import Footer from './components/footer';
+import Header from './components/header';
 import { App } from './types';
 import { elt } from './utils';
 
@@ -21,9 +22,10 @@ export default class AsyncRace implements App {
 
     const mainElement = elt<HTMLElement>('main', { className: MAIN });
 
+    const header = new Header();
     const footer = new Footer();
 
-    this.#wrapper.append(mainElement, footer.getElement());
+    this.#wrapper.append(header.getElement(), mainElement, footer.getElement());
     document.body.append(this.#wrapper);
   }
 }
