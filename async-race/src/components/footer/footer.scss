@@ -1,0 +1,51 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em 0;
+}
+
+.footer {
+  p {
+    margin: 0.5em;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  a {
+    color: #fff;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  em {
+    font-style: normal;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.github {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: -2px;
+
+  &:before {
+    content: '';
+    width: 1em;
+    height: 1em;
+    background: url('../../assets/images/github-mark-white.svg');
+    background-size: contain;
+    margin-right: 0.2em;
+  }
+
+}
+
+.rsschool {
+  display: inline-block;
+  height: 3em;
+  width: calc(3rem * 300 / 111);
+  background-image: url('../../assets/images/rs_school_js.svg');
+  filter: invert(1);
+}

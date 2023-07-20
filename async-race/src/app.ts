@@ -1,12 +1,11 @@
+import Footer from './components/footer';
 import { App } from './types';
-import { elt } from './utils/utils';
+import { elt } from './utils';
 
 const CssClasses = {
   APP: 'app',
   WRAPPER: 'wrapper',
-  HEADER: 'header',
   MAIN: 'main',
-  FOOTER: 'footer',
 };
 
 export default class AsyncRace implements App {
@@ -22,7 +21,9 @@ export default class AsyncRace implements App {
 
     const mainElement = elt<HTMLElement>('main', { className: MAIN });
 
-    this.#wrapper.append(mainElement);
+    const footer = new Footer();
+
+    this.#wrapper.append(mainElement, footer.getElement());
     document.body.append(this.#wrapper);
   }
 }
