@@ -53,3 +53,7 @@ export type ElementProps = {
   href?: string;
   placeholder?: string;
 } | null;
+
+export abstract class App {
+  public abstract start(): void;
+}
