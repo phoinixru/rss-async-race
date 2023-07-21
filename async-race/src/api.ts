@@ -122,7 +122,7 @@ async function deleteWinner(id: number): Promise<ApiResponse<Empty>> {
 
 async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiResponse<Engine>> {
   const queryParams = new URLSearchParams({ id: String(id), status }).toString();
-  const params: RequestParams = { method: 'GET', endpoint: Endpoints.ENGINE, queryParams };
+  const params: RequestParams = { method: 'PATCH', endpoint: Endpoints.ENGINE, queryParams };
   const result = await apiRequest<Engine>(params);
 
   return result;

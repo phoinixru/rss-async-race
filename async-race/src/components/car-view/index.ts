@@ -2,7 +2,7 @@ import './car.scss';
 import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
 import { Car, StatusCodes } from '../../types';
-import { deleteCar, deleteWinner } from '../../api';
+import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
 import UpdateForm from '../update-form';
 
 const CssClasses = {
@@ -11,6 +11,7 @@ const CssClasses = {
   NAME: 'car__name',
   TRACK: 'car__track',
   IMAGE: 'car__image',
+  DRIVE: 'car--drive',
   BUTTON: 'button',
   REMOVE: 'button--remove',
   UPDATE: 'button--update',
@@ -44,6 +45,8 @@ export default class CarView extends Component<HTMLDivElement> {
 
   #carElement: HTMLDivElement;
 
+  #trackElement: HTMLDivElement;
+
   constructor(car: Car) {
     const { CAR, UPDATE, REMOVE, START, STOP, CONTROLS, IMAGE } = CssClasses;
 
@@ -60,6 +63,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#controlsFieldset = elt<HTMLFieldSetElement>('fieldset', { className: CONTROLS });
     this.#carElement = elt<HTMLDivElement>('div', { className: IMAGE });
     this.#carElement.style.backgroundColor = car.color;
+    this.#trackElement = elt<HTMLDivElement>('div', { className: CssClasses.TRACK });
 
     this.addEventListeners();
     this.render();
@@ -70,17 +74,23 @@ export default class CarView extends Component<HTMLDivElement> {
       this.removeCar().catch(errorHandler);
     });
     this.#btnUpdate.addEventListener('click', () => this.updateCar());
+    this.#btnStart.addEventListener('click', () => {
+      this.drive().catch(errorHandler);
+    });
+    this.#btnStop.addEventListener('click', () => {
+      this.stop().catch(errorHandler);
+    });
   }
 
   private render(): void {
     this.#controlsFieldset.append(this.#btnUpdate, this.#btnRemove, this.#btnStart, this.#btnStop);
+    this.#btnStop.disabled = true;
 
     const carName = elt<HTMLHeadingElement>('h3', { className: CssClasses.NAME }, this.#car.name);
-    const track = elt<HTMLDivElement>('div', { className: CssClasses.TRACK });
 
-    track.append(this.#carElement);
+    this.#trackElement.append(this.#carElement);
 
-    this.element.append(carName, this.#controlsFieldset, track);
+    this.element.append(carName, this.#controlsFieldset, this.#trackElement);
   }
 
   private async removeCar(): Promise<void> {
@@ -107,5 +117,66 @@ export default class CarView extends Component<HTMLDivElement> {
 
   private disableControls(disabled = false): void {
     this.#controlsFieldset.disabled = disabled;
+  }
+
+  public async drive(): Promise<number> {
+    this.reset();
+
+    const { id } = this.#car;
+    let time = -1;
+    this.#btnStart.disabled = true;
+
+    const result = await manipulateEngine(id, 'started');
+    const { status, content } = result;
+
+    if (status !== StatusCodes.OK) {
+      return Promise.resolve(time);
+    }
+
+    this.#btnStop.disabled = false;
+
+    if (content) {
+      const { velocity, distance } = content;
+      time = Math.round(distance / velocity);
+      this.run(time);
+    }
+
+    const driveResult = await manipulateEngine(id, 'drive');
+    if (driveResult.status === StatusCodes.INTERNAL_SERVER_ERROR) {
+      this.crash();
+      return Promise.reject(new Error('crash'));
+    }
+
+    return Promise.resolve(time);
+  }
+
+  private async stop(): Promise<void> {
+    const { id } = this.#car;
+    this.#btnStop.disabled = true;
+
+    await manipulateEngine(id, 'stopped');
+    this.reset();
+
+    this.#btnStart.disabled = false;
+  }
+
+  private run(time: number): void {
+    this.#carElement.style.left = '100%';
+    this.#carElement.style.transitionDuration = `${time}ms`;
+    this.element.classList.add(CssClasses.DRIVE);
+  }
+
+  private crash(): void {
+    const currentLeft = parseInt(getComputedStyle(this.#carElement).left, 10);
+    const trackWidth = this.#trackElement.clientWidth;
+    this.#carElement.style.left = `${(100 * currentLeft) / trackWidth}%`;
+    this.#carElement.style.transition = 'none';
+    this.element.classList.remove(CssClasses.DRIVE);
+  }
+
+  private reset(): void {
+    this.element.classList.remove(CssClasses.DRIVE);
+    this.#carElement.style.left = '';
+    this.#carElement.style.transition = '';
   }
 }

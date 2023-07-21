@@ -10,7 +10,9 @@ const CssClasses = {
 };
 
 export default class CarsList extends List {
-  #cars: Car[] = [];
+  #carsData: Car[] = [];
+
+  #cars: CarView[] = [];
 
   constructor(perPage: number) {
     super(perPage, CARS_LIST_TITLE);
@@ -37,7 +39,7 @@ export default class CarsList extends List {
     const { status, message, content, total } = result;
 
     if (status === StatusCodes.OK && content) {
-      this.#cars = content;
+      this.#carsData = content;
       this.totalItems = Number(total);
       this.renderContent();
 
@@ -54,17 +56,19 @@ export default class CarsList extends List {
   }
 
   private renderCars(): void {
+    this.#cars.length = 0;
     [...this.contentElement.children].forEach((node) => node.remove());
 
-    this.#cars.forEach((car) => {
+    this.#carsData.forEach((car) => {
       const carView = new CarView(car);
+      this.#cars.push(carView);
       this.contentElement.append(carView.getElement());
     });
   }
 
   private handleCarUpdate(event: CustomEvent<number>): void {
     const updateId = event.detail;
-    if (!this.#cars.find(({ id }) => id === updateId)) {
+    if (!this.#carsData.find(({ id }) => id === updateId)) {
       return;
     }
 
@@ -78,5 +82,9 @@ export default class CarsList extends List {
 
     this.currentPage = pageNumber;
     this.loadCars().catch(errorHandler);
+  }
+
+  public getCars(): CarView[] {
+    return this.#cars;
   }
 }
