@@ -1,5 +1,5 @@
 import { SERVER_HOST, SERVER_PORT } from './config';
-import { Car, Engine, EngineStatus, Winner, StatusCodes } from './types';
+import { Car, Engine, EngineStatus, Winner, StatusCodes, Sort, Order } from './types';
 import { assign, stringify } from './utils';
 
 const apiUrl = `${SERVER_HOST}:${SERVER_PORT}`;
@@ -88,8 +88,14 @@ async function getCars(page: number, limit: number): Promise<ApiResponse<Car[]>>
   return result;
 }
 
-async function getWinners(): Promise<ApiResponse<Winner[]>> {
-  const params: RequestParams = { method: 'GET', endpoint: Endpoints.WINNERS };
+async function getWinners(page: number, limit: number, sort: Sort, order: Order): Promise<ApiResponse<Winner[]>> {
+  const queryParams = new URLSearchParams({
+    _page: String(page),
+    _limit: String(limit),
+    _sort: sort,
+    _order: order,
+  }).toString();
+  const params: RequestParams = { method: 'GET', endpoint: Endpoints.WINNERS, queryParams };
 
   const result = await apiRequest<Winner[]>(params);
 
