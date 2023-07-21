@@ -19,6 +19,15 @@ export default class WinnersList extends List {
     super(perPage, WINNERS_LIST_TITLE);
     this.element.classList.add(CssClasses.LIST);
     this.loadWinners().catch(errorHandler);
+    this.addEventListeners();
+  }
+
+  private addEventListeners(): void {
+    document.addEventListener('winner-delete', () => this.updateList());
+  }
+
+  private updateList(): void {
+    this.loadWinners().catch(errorHandler);
   }
 
   private async loadWinners(): Promise<void> {

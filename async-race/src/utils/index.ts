@@ -49,6 +49,11 @@ const getRandomName = (): string => {
   return `${make} ${model}`;
 };
 
+function dispatch<T>(type: string, detail?: T): void {
+  const event = new CustomEvent<T>(type, { detail });
+  document.dispatchEvent(event);
+}
+
 const { keys, values, assign, entries, fromEntries } = Object;
 const { stringify, parse } = JSON;
 
@@ -67,4 +72,5 @@ export {
   getRandomName,
   stringify,
   parse,
+  dispatch,
 };

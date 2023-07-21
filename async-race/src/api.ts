@@ -8,7 +8,9 @@ type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 type Success = { success: boolean };
 
-type ResponseContent = Car | Car[] | Winner | Winner[] | Success | Engine;
+type Empty = Record<string, never>;
+
+type ResponseContent = Car | Car[] | Winner | Winner[] | Success | Engine | Empty;
 
 type ApiResponse<T extends ResponseContent> = {
   status: StatusCodes;
@@ -80,6 +82,14 @@ async function updateCar(id: number, car: Partial<Car>): Promise<ApiResponse<Car
   return result;
 }
 
+async function deleteCar(id: number): Promise<ApiResponse<Empty>> {
+  const endpoint = getEndpoint(Endpoints.CAR, id);
+  const params: RequestParams = { method: 'DELETE', endpoint };
+  const result = await apiRequest<Empty>(params);
+
+  return result;
+}
+
 async function getCars(page: number, limit: number): Promise<ApiResponse<Car[]>> {
   const queryParams = new URLSearchParams({ _page: String(page), _limit: String(limit) }).toString();
   const params: RequestParams = { method: 'GET', endpoint: Endpoints.GARAGE, queryParams };
@@ -102,6 +112,14 @@ async function getWinners(page: number, limit: number, sort: Sort, order: Order)
   return result;
 }
 
+async function deleteWinner(id: number): Promise<ApiResponse<Empty>> {
+  const endpoint = getEndpoint(Endpoints.WINNER, id);
+  const params: RequestParams = { method: 'DELETE', endpoint };
+  const result = await apiRequest<Empty>(params);
+
+  return result;
+}
+
 async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiResponse<Engine>> {
   const queryParams = new URLSearchParams({ id: String(id), status }).toString();
   const params: RequestParams = { method: 'GET', endpoint: Endpoints.ENGINE, queryParams };
@@ -110,4 +128,4 @@ async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiRe
   return result;
 }
 
-export { getCars, createCar, updateCar, manipulateEngine, getWinners };
+export { getCars, createCar, updateCar, deleteCar, manipulateEngine, getWinners, deleteWinner };

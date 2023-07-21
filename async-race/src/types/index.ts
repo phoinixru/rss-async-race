@@ -41,3 +41,14 @@ export enum StatusCodes {
   TOO_MANY_REQUESTS = 429,
   INTERNAL_SERVER_ERROR = 500,
 }
+
+declare global {
+  interface DocumentEventMap {
+    'car-add': CustomEvent;
+    'car-update': CustomEvent<number>;
+    'car-delete': CustomEvent<number>;
+    'winner-add': CustomEvent;
+    'winner-update': CustomEvent<number>;
+    'winner-delete': CustomEvent<number>;
+  }
+}

@@ -1,7 +1,8 @@
 import './car.scss';
-import { elt } from '../../utils';
+import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
-import { Car } from '../../types';
+import { Car, StatusCodes } from '../../types';
+import { deleteCar, deleteWinner } from '../../api';
 
 const CssClasses = {
   CAR: 'car',
@@ -64,7 +65,9 @@ export default class CarView extends Component<HTMLDivElement> {
   }
 
   private addEventListeners(): void {
-    this.#btnRemove.addEventListener('click', () => this.removeCar());
+    this.#btnRemove.addEventListener('click', () => {
+      this.removeCar().catch(errorHandler);
+    });
     this.#btnUpdate.addEventListener('click', () => this.updateCar());
   }
 
@@ -79,11 +82,28 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.append(carName, this.#controlsFieldset, track);
   }
 
-  private removeCar(): void {
-    console.log(this.#car);
+  private async removeCar(): Promise<void> {
+    this.disableControls(true);
+
+    const { id } = this.#car;
+    let result = await deleteWinner(id);
+
+    if (result.status === StatusCodes.OK) {
+      dispatch('winner-delete', id);
+    }
+
+    result = await deleteCar(id);
+
+    if (result.status === StatusCodes.OK) {
+      dispatch('car-delete', id);
+    }
   }
 
   private updateCar(): void {
     console.log(this.#car);
+  }
+
+  private disableControls(disabled = false): void {
+    this.#controlsFieldset.disabled = disabled;
   }
 }

@@ -1,6 +1,6 @@
 import { createCar } from '../../api';
 import { StatusCodes } from '../../types';
-import { elt, errorHandler, getRandomColor } from '../../utils';
+import { dispatch, elt, errorHandler, getRandomColor } from '../../utils';
 import Form from '../form';
 
 const CssClasses = {
@@ -33,10 +33,10 @@ export default class CreateForm extends Form {
     this.disable();
 
     const result = await createCar({ name, color });
-    const { status, message, content } = result;
+    const { status, message } = result;
 
     if (status === StatusCodes.CREATED) {
-      console.log(content);
+      dispatch('car-add');
     } else {
       console.log(message);
     }

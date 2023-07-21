@@ -16,6 +16,17 @@ export default class CarsList extends List {
     super(perPage, CARS_LIST_TITLE);
     this.element.classList.add(CssClasses.LIST);
     this.loadCars().catch(errorHandler);
+
+    this.addEventListeners();
+  }
+
+  private addEventListeners(): void {
+    document.addEventListener('car-add', () => this.updateList());
+    document.addEventListener('car-delete', () => this.updateList());
+  }
+
+  private updateList(): void {
+    this.loadCars().catch(errorHandler);
   }
 
   private async loadCars(): Promise<void> {
