@@ -1,4 +1,6 @@
-import { elt, errorHandler, getRandomColor, pause } from '../../utils';
+import { createCar } from '../../api';
+import { StatusCodes } from '../../types';
+import { elt, errorHandler, getRandomColor } from '../../utils';
 import Form from '../form';
 
 const CssClasses = {
@@ -30,9 +32,14 @@ export default class CreateForm extends Form {
 
     this.disable();
 
-    await pause(500);
+    const result = await createCar({ name, color });
+    const { status, message, content } = result;
 
-    console.log(name, color);
+    if (status === StatusCodes.CREATED) {
+      console.log(content);
+    } else {
+      console.log(message);
+    }
 
     this.reset();
     this.enable();

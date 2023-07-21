@@ -9,6 +9,8 @@ export const GITHUB_NAME = 'phoinixru';
 export const RSSCHOOL_LINK = 'https://rs.school/js/';
 
 export const MAIN_TITLE = 'Async Race';
+export const CARS_LIST_TITLE = 'Garage';
+export const WINNERS_LIST_TITLE = 'Winners';
 
 export const MAKES = [
   'Mercedes-Benz',

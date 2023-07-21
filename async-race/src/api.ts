@@ -1,19 +1,10 @@
 import { SERVER_HOST, SERVER_PORT } from './config';
-import { Car, Engine, EngineStatus, Winner } from './types';
+import { Car, Engine, EngineStatus, Winner, StatusCodes } from './types';
 import { assign, stringify } from './utils';
 
 const apiUrl = `${SERVER_HOST}:${SERVER_PORT}`;
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
-enum StatusCodes {
-  OK = 200,
-  CREATED = 201,
-  BAD_REQUEST = 400,
-  NOT_FOUND = 404,
-  TOO_MANY_REQUESTS = 429,
-  INTERNAL_SERVER_ERROR = 500,
-}
 
 type Success = { success: boolean };
 
