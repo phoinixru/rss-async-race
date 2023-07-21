@@ -50,4 +50,21 @@ const getRandomName = (): string => {
 };
 
 const { keys, values, assign, entries, fromEntries } = Object;
-export { qs, qsa, elt, keys, values, assign, entries, fromEntries, pause, errorHandler, getRandomColor, getRandomName };
+const { stringify, parse } = JSON;
+
+export {
+  qs,
+  qsa,
+  elt,
+  keys,
+  values,
+  assign,
+  entries,
+  fromEntries,
+  pause,
+  errorHandler,
+  getRandomColor,
+  getRandomName,
+  stringify,
+  parse,
+};

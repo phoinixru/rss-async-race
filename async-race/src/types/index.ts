@@ -10,6 +10,13 @@ export type Winner = {
   time: number;
 };
 
+export type Engine = {
+  velocity: number;
+  distance: number;
+};
+
+export type EngineStatus = 'started' | 'stopped' | 'drive';
+
 export type Sort = 'id' | 'wins' | 'time';
 
 export type Order = 'ASC' | 'DESC';
