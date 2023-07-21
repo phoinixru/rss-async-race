@@ -1,5 +1,6 @@
 import { elt } from '../../utils';
 import Component from '../component';
+import Pagination from '../pagination';
 
 const CssClasses = {
   LIST: 'list',
@@ -21,6 +22,8 @@ export default class List extends Component<HTMLDivElement> {
 
   #pageElement: HTMLElement;
 
+  protected pagination: Pagination;
+
   protected contentElement: HTMLDivElement;
 
   constructor(perPage: number, title: string) {
@@ -35,11 +38,13 @@ export default class List extends Component<HTMLDivElement> {
     this.#pageElement = elt<HTMLElement>('div', { className: CssClasses.PAGE });
     this.contentElement = elt<HTMLDivElement>('div', { className: CssClasses.CONTENT });
 
+    this.pagination = new Pagination(perPage);
+
     this.render();
   }
 
   private render(): void {
-    this.element.append(this.#titleElement, this.#pageElement, this.contentElement);
+    this.element.append(this.#titleElement, this.#pageElement, this.contentElement, this.pagination.getElement());
 
     this.updateCounters();
   }
@@ -47,5 +52,9 @@ export default class List extends Component<HTMLDivElement> {
   protected updateCounters(): void {
     this.#titleElement.innerHTML = `${this.#title} (${this.totalItems})`;
     this.#pageElement.innerHTML = `Page #${this.currentPage}`;
+  }
+
+  protected updatePagination(): void {
+    this.pagination.updateCounts(this.totalItems);
   }
 }

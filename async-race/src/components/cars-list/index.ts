@@ -15,6 +15,8 @@ export default class CarsList extends List {
   constructor(perPage: number) {
     super(perPage, CARS_LIST_TITLE);
     this.element.classList.add(CssClasses.LIST);
+
+    this.pagination.onChange((page) => this.changePage(page));
     this.loadCars().catch(errorHandler);
 
     this.addEventListeners();
@@ -22,7 +24,7 @@ export default class CarsList extends List {
 
   private addEventListeners(): void {
     document.addEventListener('car-add', () => this.updateList());
-    document.addEventListener('car-update', () => this.updateList());
+    document.addEventListener('car-update', (event) => this.handleCarUpdate(event));
     document.addEventListener('car-delete', () => this.updateList());
   }
 
@@ -47,6 +49,7 @@ export default class CarsList extends List {
 
   private renderContent(): void {
     this.updateCounters();
+    this.updatePagination();
     this.renderCars();
   }
 
@@ -57,5 +60,23 @@ export default class CarsList extends List {
       const carView = new CarView(car);
       this.contentElement.append(carView.getElement());
     });
+  }
+
+  private handleCarUpdate(event: CustomEvent<number>): void {
+    const updateId = event.detail;
+    if (!this.#cars.find(({ id }) => id === updateId)) {
+      return;
+    }
+
+    this.updateList();
+  }
+
+  private changePage(pageNumber: number): void {
+    if (this.currentPage === pageNumber) {
+      return;
+    }
+
+    this.currentPage = pageNumber;
+    this.loadCars().catch(errorHandler);
   }
 }

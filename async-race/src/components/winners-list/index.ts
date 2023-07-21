@@ -18,6 +18,8 @@ export default class WinnersList extends List {
   constructor(perPage: number) {
     super(perPage, WINNERS_LIST_TITLE);
     this.element.classList.add(CssClasses.LIST);
+
+    this.pagination.onChange((page) => this.changePage(page));
     this.loadWinners().catch(errorHandler);
     this.addEventListeners();
   }
@@ -48,6 +50,7 @@ export default class WinnersList extends List {
 
   private renderContent(): void {
     this.updateCounters();
+    this.updatePagination();
     this.renderWinners();
   }
 
@@ -69,5 +72,14 @@ export default class WinnersList extends List {
     }
 
     this.updateList();
+  }
+
+  private changePage(pageNumber: number): void {
+    if (this.currentPage === pageNumber) {
+      return;
+    }
+
+    this.currentPage = pageNumber;
+    this.loadWinners().catch(errorHandler);
   }
 }
