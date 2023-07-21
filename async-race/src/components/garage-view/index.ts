@@ -21,7 +21,7 @@ export default class GarageView extends View {
     this.element.classList.add(CssClasses.GARAGE);
 
     this.#createForm = new CreateForm();
-    this.#updateForm = new UpdateForm();
+    this.#updateForm = UpdateForm.getInstance();
     this.#carsList = new CarsList(CARS_PER_PAGE);
 
     this.render();

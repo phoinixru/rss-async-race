@@ -76,7 +76,7 @@ async function createCar(car: Partial<Car>): Promise<ApiResponse<Car>> {
 async function updateCar(id: number, car: Partial<Car>): Promise<ApiResponse<Car>> {
   const dataParams = stringify(car);
   const endpoint = getEndpoint(Endpoints.CAR, id);
-  const params: RequestParams = { method: 'GET', endpoint, dataParams };
+  const params: RequestParams = { method: 'PUT', endpoint, dataParams };
   const result = await apiRequest<Car>(params);
 
   return result;

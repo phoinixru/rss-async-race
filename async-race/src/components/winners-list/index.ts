@@ -24,6 +24,7 @@ export default class WinnersList extends List {
 
   private addEventListeners(): void {
     document.addEventListener('winner-delete', () => this.updateList());
+    document.addEventListener('car-update', (event) => this.handleCarUpdate(event));
   }
 
   private updateList(): void {
@@ -59,5 +60,14 @@ export default class WinnersList extends List {
     const listHtml = this.#winners.map(winnerHtml).join('\n');
 
     this.contentElement.innerHTML = listHtml;
+  }
+
+  private handleCarUpdate(event: CustomEvent<number>): void {
+    const updateId = event.detail;
+    if (!this.#winners.find(({ id }) => id === updateId)) {
+      return;
+    }
+
+    this.updateList();
   }
 }

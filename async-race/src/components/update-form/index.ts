@@ -1,5 +1,6 @@
-import { Car } from '../../types';
-import { elt, errorHandler, pause } from '../../utils';
+import { updateCar } from '../../api';
+import { Car, StatusCodes } from '../../types';
+import { dispatch, elt, errorHandler } from '../../utils';
 import Form from '../form';
 
 const CssClasses = {
@@ -10,9 +11,11 @@ const CssClasses = {
 const BTN_UPDATE_TEXT = 'Update';
 
 export default class UpdateForm extends Form {
+  private static instance: UpdateForm;
+
   #inputId: HTMLInputElement;
 
-  constructor() {
+  private constructor() {
     super();
     this.element.classList.add(CssClasses.CREATE);
     this.#inputId = elt<HTMLInputElement>('input', { type: 'hidden' });
@@ -25,6 +28,19 @@ export default class UpdateForm extends Form {
 
     this.fieldset.append(btnUpdate);
     this.disable();
+
+    this.addEventListeners();
+  }
+
+  public static getInstance(): UpdateForm {
+    if (!UpdateForm.instance) {
+      UpdateForm.instance = new UpdateForm();
+    }
+    return UpdateForm.instance;
+  }
+
+  private addEventListeners(): void {
+    document.addEventListener('car-delete', (event) => this.handleCarDelete(event));
   }
 
   private async updateCar(): Promise<void> {
@@ -34,11 +50,12 @@ export default class UpdateForm extends Form {
 
     this.disable();
 
-    await pause(500);
+    const result = await updateCar(id, { name, color });
 
-    console.log(id, name, color);
+    if (result.status === StatusCodes.OK) {
+      dispatch('car-update', id);
+    }
 
-    this.enable();
     this.reset();
   }
 
@@ -50,5 +67,13 @@ export default class UpdateForm extends Form {
     this.inputColor.value = color;
 
     this.enable();
+  }
+
+  private handleCarDelete(event: CustomEvent<number>): void {
+    const id = event.detail;
+    if (this.#inputId.value === String(id)) {
+      this.reset();
+      this.disable();
+    }
   }
 }

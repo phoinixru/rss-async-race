@@ -3,6 +3,7 @@ import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
 import { Car, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner } from '../../api';
+import UpdateForm from '../update-form';
 
 const CssClasses = {
   CAR: 'car',
@@ -100,7 +101,8 @@ export default class CarView extends Component<HTMLDivElement> {
   }
 
   private updateCar(): void {
-    console.log(this.#car);
+    const updateForm = UpdateForm.getInstance();
+    updateForm.loadForm(this.#car);
   }
 
   private disableControls(disabled = false): void {
