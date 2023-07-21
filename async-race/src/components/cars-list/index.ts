@@ -28,7 +28,7 @@ export default class CarsList extends List {
     document.addEventListener('car-delete', () => this.updateList());
   }
 
-  private updateList(): void {
+  public updateList(): void {
     this.loadCars().catch(errorHandler);
   }
 

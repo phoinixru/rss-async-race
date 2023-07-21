@@ -13,6 +13,8 @@ const CssClasses = {
 const BTN_NEXT_TEXT = 'Next';
 const BTN_PREV_TEXT = 'Prev';
 
+const FIRST_PAGE = 1;
+
 type PageChangeListener = (page: number) => void;
 
 export default class Pagination extends Component<HTMLFieldSetElement> {
@@ -20,7 +22,7 @@ export default class Pagination extends Component<HTMLFieldSetElement> {
 
   #btnNext: HTMLButtonElement;
 
-  #currentPage = 1;
+  #currentPage = FIRST_PAGE;
 
   #totalPages = 0;
 
@@ -58,19 +60,19 @@ export default class Pagination extends Component<HTMLFieldSetElement> {
   public updateCounts(totalItems: number): void {
     this.#totalPages = Math.ceil(totalItems / this.#perPage);
     if (this.#currentPage > this.#totalPages) {
-      this.#currentPage = this.#totalPages;
+      this.#currentPage = Math.max(FIRST_PAGE, this.#totalPages);
       this.setPage();
     }
     this.updateButtons();
   }
 
   private updateButtons(): void {
-    this.#btnPrev.disabled = this.#currentPage === 1;
+    this.#btnPrev.disabled = this.#currentPage <= FIRST_PAGE;
     this.#btnNext.disabled = this.#currentPage >= this.#totalPages;
   }
 
   private prevPage(): void {
-    this.#currentPage = Math.max(1, this.#currentPage - 1);
+    this.#currentPage = Math.max(FIRST_PAGE, this.#currentPage - 1);
     this.setPage();
   }
 
