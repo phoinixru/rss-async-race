@@ -2,6 +2,7 @@ import { getCars } from '../../api';
 import { CARS_LIST_TITLE } from '../../config';
 import { Car, StatusCodes } from '../../types';
 import { errorHandler } from '../../utils';
+import CarView from '../car-view';
 import List from '../list';
 
 const CssClasses = {
@@ -38,9 +39,11 @@ export default class CarsList extends List {
   }
 
   private renderCars(): void {
-    const carHtml = (car: Car): string => `<p style="color: ${car.color}">${car.name}</p>`;
-    const listHtml = this.#cars.map(carHtml).join('\n');
+    [...this.contentElement.children].forEach((node) => node.remove());
 
-    this.contentElement.innerHTML = listHtml;
+    this.#cars.forEach((car) => {
+      const carView = new CarView(car);
+      this.contentElement.append(carView.getElement());
+    });
   }
 }
