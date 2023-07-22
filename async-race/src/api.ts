@@ -112,6 +112,31 @@ async function getWinners(page: number, limit: number, sort: Sort, order: Order)
   return result;
 }
 
+async function createWinner(winner: Partial<Winner>): Promise<ApiResponse<Winner>> {
+  const dataParams = stringify(winner);
+  const params: RequestParams = { method: 'POST', endpoint: Endpoints.WINNERS, dataParams };
+  const result = await apiRequest<Winner>(params);
+
+  return result;
+}
+
+async function updateWinner(id: number, winner: Partial<Winner>): Promise<ApiResponse<Winner>> {
+  const dataParams = stringify(winner);
+  const endpoint = getEndpoint(Endpoints.WINNER, id);
+  const params: RequestParams = { method: 'PUT', endpoint, dataParams };
+  const result = await apiRequest<Winner>(params);
+
+  return result;
+}
+
+async function getWinner(id: number): Promise<ApiResponse<Winner | Empty>> {
+  const endpoint = getEndpoint(Endpoints.WINNER, id);
+  const params: RequestParams = { method: 'GET', endpoint };
+  const result = await apiRequest<Winner | Empty>(params);
+
+  return result;
+}
+
 async function deleteWinner(id: number): Promise<ApiResponse<Empty>> {
   const endpoint = getEndpoint(Endpoints.WINNER, id);
   const params: RequestParams = { method: 'DELETE', endpoint };
@@ -121,11 +146,26 @@ async function deleteWinner(id: number): Promise<ApiResponse<Empty>> {
 }
 
 async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiResponse<Engine>> {
-  const queryParams = new URLSearchParams({ id: String(id), status }).toString();
+  const query = { id: String(id), status };
+  if (status === 'stopped') {
+    assign(query, { speed: '0' });
+  }
+  const queryParams = new URLSearchParams(query).toString();
   const params: RequestParams = { method: 'PATCH', endpoint: Endpoints.ENGINE, queryParams };
   const result = await apiRequest<Engine>(params);
 
   return result;
 }
 
-export { getCars, createCar, updateCar, deleteCar, manipulateEngine, getWinners, deleteWinner };
+export {
+  getCars,
+  createCar,
+  updateCar,
+  deleteCar,
+  manipulateEngine,
+  getWinners,
+  createWinner,
+  updateWinner,
+  getWinner,
+  deleteWinner,
+};

@@ -25,6 +25,8 @@ export default class WinnersList extends List {
   }
 
   private addEventListeners(): void {
+    document.addEventListener('winner-create', () => this.updateList());
+    document.addEventListener('winner-update', () => this.updateList());
     document.addEventListener('winner-delete', () => this.updateList());
     document.addEventListener('car-update', (event) => this.handleCarUpdate(event));
   }

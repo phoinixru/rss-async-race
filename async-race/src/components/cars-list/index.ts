@@ -25,7 +25,7 @@ export default class CarsList extends List {
   }
 
   private addEventListeners(): void {
-    document.addEventListener('car-add', () => this.updateList());
+    document.addEventListener('car-create', () => this.updateList());
     document.addEventListener('car-update', (event) => this.handleCarUpdate(event));
     document.addEventListener('car-delete', () => this.updateList());
   }

@@ -36,7 +36,7 @@ export default class CreateForm extends Form {
     const { status, message } = result;
 
     if (status === StatusCodes.CREATED) {
-      dispatch('car-add');
+      dispatch('car-create');
     } else {
       console.log(message);
     }

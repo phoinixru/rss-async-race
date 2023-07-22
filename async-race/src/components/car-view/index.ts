@@ -12,6 +12,7 @@ const CssClasses = {
   TRACK: 'car__track',
   IMAGE: 'car__image',
   DRIVE: 'car--drive',
+  CRASH: 'car--crash',
   BUTTON: 'button',
   REMOVE: 'button--remove',
   UPDATE: 'button--update',
@@ -125,7 +126,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.reset();
 
     const { id } = this.#car;
-    let time = -1;
+    let time = 0;
     this.#btnStart.disabled = true;
 
     const result = await manipulateEngine(id, 'started');
@@ -181,10 +182,11 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#carElement.style.left = `${(100 * currentLeft) / trackWidth}%`;
     this.#carElement.style.transition = 'none';
     this.element.classList.remove(CssClasses.DRIVE);
+    this.element.classList.add(CssClasses.CRASH);
   }
 
   private reset(): void {
-    this.element.classList.remove(CssClasses.DRIVE);
+    this.element.classList.remove(CssClasses.DRIVE, CssClasses.CRASH);
     this.#carElement.style.left = '';
     this.#carElement.style.transition = '';
   }

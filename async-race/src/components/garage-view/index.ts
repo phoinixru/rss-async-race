@@ -4,9 +4,9 @@ import CreateForm from '../create-form';
 import UpdateForm from '../update-form';
 import { CARS_PER_PAGE, RANDOM_CARS_NUMBER } from '../../config';
 import CarsList from '../cars-list';
-import { elt, errorHandler, getRandomColor, getRandomName } from '../../utils';
-import { createCar } from '../../api';
-import { DriveResult } from '../../types';
+import { dispatch, elt, errorHandler, getRandomColor, getRandomName } from '../../utils';
+import { createCar, createWinner, getWinner, updateWinner } from '../../api';
+import { DriveResult, StatusCodes } from '../../types';
 
 const CssClasses = {
   GARAGE: 'garage',
@@ -21,6 +21,37 @@ const CssClasses = {
 const BTN_CREATE_CARS_TEXT = `Add ${RANDOM_CARS_NUMBER} cars`;
 const BTN_START_RACE_TEXT = 'Race';
 const BTN_RESET_RACE_TEXT = 'Reset';
+
+async function saveWinner(result: DriveResult): Promise<void> {
+  const {
+    time,
+    car: { id },
+  } = result;
+  const timeSec = time / 1000;
+
+  const current = await getWinner(id);
+  if (current.status === StatusCodes.NOT_FOUND || !current.content) {
+    const createResult = await createWinner({ id, wins: 1, time: timeSec });
+
+    if (createResult.status !== StatusCodes.CREATED) {
+      throw new Error(`Failed to create a winner`);
+    }
+
+    dispatch('winner-create');
+    return;
+  }
+
+  const { time: currentTime, wins: currentWins } = current.content;
+  const updateResult = await updateWinner(id, {
+    wins: currentWins + 1,
+    time: Math.min(currentTime, timeSec),
+  });
+
+  if (updateResult.status !== StatusCodes.OK) {
+    throw new Error(`Failed to update winner ${id}`);
+  }
+  dispatch('winner-update');
+}
 
 export default class GarageView extends View {
   #createForm: CreateForm;
@@ -109,6 +140,7 @@ export default class GarageView extends View {
     Promise.any(racers)
       .then((result) => {
         this.announceTheWinner(result);
+        return saveWinner(result);
       })
       .catch(() => {
         console.log('All cars crashed');
@@ -144,8 +176,10 @@ export default class GarageView extends View {
   }
 
   private announceTheWinner(result: DriveResult): void {
-    const { time, car } = result;
-    const { name } = car;
+    const {
+      time,
+      car: { name },
+    } = result;
     const timeSec = (time / 1000).toFixed(2);
 
     this.#modal.innerHTML = `${name} finished first in ${timeSec}&nbsp;sec`;

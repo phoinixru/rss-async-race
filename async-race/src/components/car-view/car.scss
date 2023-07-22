@@ -21,19 +21,6 @@
   padding-left: 1em;
 }
 
-.car__image {
-  width: 5em;
-  height: 2.2em;
-  position: relative;
-  left: 0;
-
-  mask-image: url('../../assets/images/car.svg');
-  mask-repeat: no-repeat;
-  mask-size: 100%;
-  -webkit-mask-image: url('../../assets/images/car.svg');
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100%;
-}
 
 .car__track {
   position: relative;
@@ -55,8 +42,28 @@
 }
 
 .car--drive {
-  .car__image {
+  .car__image {}
+}
+
+.car__image {
+  width: 5em;
+  height: 2.2em;
+  position: relative;
+  left: 0;
+
+  mask-image: url('../../assets/images/car.svg');
+  mask-repeat: no-repeat;
+  mask-size: 100%;
+  -webkit-mask-image: url('../../assets/images/car.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+
+  .car--drive & {
     transition: left 1ms linear;
     left: 100%;
+  }
+
+  .car--crash & {
+    transform: rotate(180deg);
   }
 }

@@ -49,10 +49,10 @@ export enum StatusCodes {
 
 declare global {
   interface DocumentEventMap {
-    'car-add': CustomEvent;
+    'car-create': CustomEvent;
     'car-update': CustomEvent<number>;
     'car-delete': CustomEvent<number>;
-    'winner-add': CustomEvent;
+    'winner-create': CustomEvent;
     'winner-update': CustomEvent<number>;
     'winner-delete': CustomEvent<number>;
   }
