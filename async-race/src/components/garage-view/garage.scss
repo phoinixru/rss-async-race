@@ -1,3 +1,25 @@
+.garage {
+  position: relative;
+  border: 1px solid red;
+}
+
 .garage .garage__controls {
   padding-top: 1em;
+}
+
+.modal {
+  position: absolute;
+  display: none;
+  left: 50%;
+  top: 50%;
+  max-width: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2em;
+  color: #fff;
+  text-shadow: 0 2px 15px orange;
+  text-align: center;
+}
+
+.modal--show {
+  display: block;
 }

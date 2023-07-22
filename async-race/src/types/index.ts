@@ -10,6 +10,11 @@ export type Winner = {
   time: number;
 };
 
+export type DriveResult = {
+  car: Car;
+  time: number;
+};
+
 export type Engine = {
   velocity: number;
   distance: number;

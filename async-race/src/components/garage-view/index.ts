@@ -6,6 +6,7 @@ import { CARS_PER_PAGE, RANDOM_CARS_NUMBER } from '../../config';
 import CarsList from '../cars-list';
 import { elt, errorHandler, getRandomColor, getRandomName } from '../../utils';
 import { createCar } from '../../api';
+import { DriveResult } from '../../types';
 
 const CssClasses = {
   GARAGE: 'garage',
@@ -13,6 +14,8 @@ const CssClasses = {
   START: 'button button--start',
   RESET: 'button button--reset',
   CONTROLS: 'fieldset garage__controls',
+  MODAL: 'modal',
+  SHOW: 'modal--show',
 };
 
 const BTN_CREATE_CARS_TEXT = `Add ${RANDOM_CARS_NUMBER} cars`;
@@ -34,8 +37,10 @@ export default class GarageView extends View {
 
   #btnResetRace: HTMLButtonElement;
 
+  #modal: HTMLDivElement;
+
   constructor() {
-    const { BUTTON, GARAGE, START, RESET } = CssClasses;
+    const { BUTTON, GARAGE, START, RESET, MODAL } = CssClasses;
 
     super();
     this.element.classList.add(GARAGE);
@@ -48,6 +53,7 @@ export default class GarageView extends View {
     this.#btnCreateCars = elt<HTMLButtonElement>('button', { className: BUTTON }, BTN_CREATE_CARS_TEXT);
     this.#btnStartRace = elt<HTMLButtonElement>('button', { className: START }, BTN_START_RACE_TEXT);
     this.#btnResetRace = elt<HTMLButtonElement>('button', { className: RESET }, BTN_RESET_RACE_TEXT);
+    this.#modal = elt<HTMLDivElement>('div', { className: MODAL });
 
     this.addEventListeners();
     this.render();
@@ -75,7 +81,8 @@ export default class GarageView extends View {
       this.#createForm.getElement(),
       this.#updateForm.getElement(),
       this.#controls,
-      this.#carsList.getElement()
+      this.#carsList.getElement(),
+      this.#modal
     );
   }
 
@@ -97,21 +104,18 @@ export default class GarageView extends View {
     this.#btnStartRace.disabled = true;
     this.disableControls(true);
 
-    const racers = this.#carsList.getCars().map((car) => {
-      return car.drive();
-    });
+    const racers = this.#carsList.getCars().map((car) => car.drive());
 
     Promise.any(racers)
       .then((result) => {
-        console.log(result);
+        this.announceTheWinner(result);
       })
       .catch(() => {
         console.log('All cars crashed');
       });
 
     Promise.allSettled(racers)
-      .then((results) => {
-        console.log(results);
+      .then(() => {
         this.finishRace();
       })
       .catch(errorHandler);
@@ -125,6 +129,7 @@ export default class GarageView extends View {
   private async resetRace(): Promise<void> {
     this.#btnResetRace.disabled = true;
 
+    this.#modal.classList.remove(CssClasses.SHOW);
     const cars = this.#carsList.getCars().map((car) => car.stop());
     await Promise.all(cars);
 
@@ -136,5 +141,14 @@ export default class GarageView extends View {
     this.#createForm.disable(disable);
     this.#updateForm.disable(disable);
     this.#controls.disabled = disable;
+  }
+
+  private announceTheWinner(result: DriveResult): void {
+    const { time, car } = result;
+    const { name } = car;
+    const timeSec = (time / 1000).toFixed(2);
+
+    this.#modal.innerHTML = `${name} finished first in ${timeSec}&nbsp;sec`;
+    this.#modal.classList.add(CssClasses.SHOW);
   }
 }

@@ -1,7 +1,7 @@
 import './car.scss';
 import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
-import { Car, EngineStatus, StatusCodes } from '../../types';
+import { Car, DriveResult, EngineStatus, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
 import UpdateForm from '../update-form';
 
@@ -121,7 +121,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#controlsFieldset.disabled = disabled;
   }
 
-  public async drive(): Promise<number> {
+  public async drive(): Promise<DriveResult> {
     this.reset();
 
     const { id } = this.#car;
@@ -132,7 +132,7 @@ export default class CarView extends Component<HTMLDivElement> {
     const { status, content } = result;
 
     if (status !== StatusCodes.OK) {
-      return Promise.resolve(time);
+      return Promise.reject(new Error('engine malfunction'));
     }
     this.#engineStatus = 'started';
 
@@ -150,7 +150,10 @@ export default class CarView extends Component<HTMLDivElement> {
       return Promise.reject(new Error('crash'));
     }
 
-    return Promise.resolve(time);
+    return Promise.resolve({
+      time,
+      car: this.#car,
+    });
   }
 
   public async stop(): Promise<void> {
