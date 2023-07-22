@@ -66,7 +66,7 @@ export default class UpdateForm extends Form {
     this.inputName.value = name;
     this.inputColor.value = color;
 
-    this.enable();
+    this.disable(false);
   }
 
   private handleCarDelete(event: CustomEvent<number>): void {
@@ -75,5 +75,13 @@ export default class UpdateForm extends Form {
       this.reset();
       this.disable();
     }
+  }
+
+  public disable(disable = true): void {
+    if (!disable && !this.#inputId.value) {
+      return;
+    }
+
+    this.fieldset.disabled = disable;
   }
 }

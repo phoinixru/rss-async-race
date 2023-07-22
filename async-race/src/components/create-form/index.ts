@@ -42,6 +42,6 @@ export default class CreateForm extends Form {
     }
 
     this.reset();
-    this.enable();
+    this.disable(false);
   }
 }

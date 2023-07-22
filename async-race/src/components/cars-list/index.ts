@@ -87,4 +87,9 @@ export default class CarsList extends List {
   public getCars(): CarView[] {
     return this.#cars;
   }
+
+  public disableControls(disable: boolean): void {
+    this.#cars.forEach((car) => car.disableControls(disable));
+    this.pagination.disable(disable);
+  }
 }

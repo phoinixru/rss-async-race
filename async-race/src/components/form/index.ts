@@ -43,12 +43,8 @@ export default class Form extends Component<HTMLFormElement> {
     this.element.reset();
   }
 
-  protected disable(): void {
-    this.fieldset.disabled = true;
-  }
-
-  protected enable(): void {
-    this.fieldset.disabled = false;
+  public disable(disable = true): void {
+    this.fieldset.disabled = disable;
   }
 
   private fillRandom(): void {

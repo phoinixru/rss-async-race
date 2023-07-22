@@ -1,7 +1,7 @@
 import './car.scss';
 import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
-import { Car, StatusCodes } from '../../types';
+import { Car, EngineStatus, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
 import UpdateForm from '../update-form';
 
@@ -32,6 +32,8 @@ const BTN_STOP_TEXT = 'Stop';
 
 export default class CarView extends Component<HTMLDivElement> {
   #car: Car;
+
+  #engineStatus: EngineStatus = 'stopped';
 
   #btnRemove: HTMLButtonElement;
 
@@ -115,7 +117,7 @@ export default class CarView extends Component<HTMLDivElement> {
     updateForm.loadForm(this.#car);
   }
 
-  private disableControls(disabled = false): void {
+  public disableControls(disabled = false): void {
     this.#controlsFieldset.disabled = disabled;
   }
 
@@ -132,6 +134,7 @@ export default class CarView extends Component<HTMLDivElement> {
     if (status !== StatusCodes.OK) {
       return Promise.resolve(time);
     }
+    this.#engineStatus = 'started';
 
     this.#btnStop.disabled = false;
 
@@ -150,12 +153,15 @@ export default class CarView extends Component<HTMLDivElement> {
     return Promise.resolve(time);
   }
 
-  private async stop(): Promise<void> {
+  public async stop(): Promise<void> {
     const { id } = this.#car;
     this.#btnStop.disabled = true;
 
-    await manipulateEngine(id, 'stopped');
-    this.reset();
+    if (this.#engineStatus !== 'stopped') {
+      await manipulateEngine(id, 'stopped');
+      this.#engineStatus = 'stopped';
+      this.reset();
+    }
 
     this.#btnStart.disabled = false;
   }
