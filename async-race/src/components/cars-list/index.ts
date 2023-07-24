@@ -1,3 +1,4 @@
+import './cars.scss';
 import { getCars } from '../../api';
 import { CARS_LIST_TITLE } from '../../config';
 import { Car, StatusCodes } from '../../types';

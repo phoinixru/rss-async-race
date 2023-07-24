@@ -1,4 +1,3 @@
-import './winners.scss';
 import View from '../view';
 import WinnersList from '../winners-list';
 import { WINNERS_PER_PAGE } from '../../config';
@@ -10,8 +9,8 @@ const CssClasses = {
 export default class WinnersView extends View {
   #winnersList: WinnersList;
 
-  constructor() {
-    super();
+  constructor(tabLabel: string) {
+    super(tabLabel);
     this.element.classList.add(CssClasses.WINNERS);
 
     this.#winnersList = new WinnersList(WINNERS_PER_PAGE);

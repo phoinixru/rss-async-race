@@ -1,0 +1,25 @@
+.tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  gap: 1em;
+
+  input {
+    display: none;
+  }
+
+  label {
+    cursor: pointer;
+    background: rgba(0, 0, 0, .2);
+    padding: 0.5em;
+    flex-grow: 1;
+    text-align: center;
+    border-radius: 0.5em;
+    border: 2px solid #fff;
+  }
+
+  label:hover,
+  input:checked+label {
+    background: rgba(255, 255, 255, .2);
+  }
+}

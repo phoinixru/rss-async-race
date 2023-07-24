@@ -2,17 +2,17 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  padding-top: 2em;
+  justify-content: space-between;
 }
 
 .list__title {
-  width: 50%;
   margin: 0;
 }
 
 .list__page {
-  width: 50%;
   text-align: right;
+  display: flex;
+  align-items: center;
 }
 
 .list__content {

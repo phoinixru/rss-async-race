@@ -8,9 +8,12 @@ const CssClasses = {
 };
 
 export default class View extends Component<HTMLDivElement> {
-  constructor() {
+  #tabLabel: string;
+
+  constructor(tabLabel: string) {
     const element = elt<HTMLDivElement>('div', { className: CssClasses.VIEW });
     super(element);
+    this.#tabLabel = tabLabel;
   }
 
   public hide(): void {
@@ -19,5 +22,9 @@ export default class View extends Component<HTMLDivElement> {
 
   public show(): void {
     this.element.classList.toggle(CssClasses.HIDDEN, false);
+  }
+
+  public getTabLabel(): string {
+    return this.#tabLabel;
   }
 }

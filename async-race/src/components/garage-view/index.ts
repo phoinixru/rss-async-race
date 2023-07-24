@@ -70,10 +70,10 @@ export default class GarageView extends View {
 
   #modal: HTMLDivElement;
 
-  constructor() {
+  constructor(tabLabel: string) {
     const { BUTTON, GARAGE, START, RESET, MODAL } = CssClasses;
 
-    super();
+    super(tabLabel);
     this.element.classList.add(GARAGE);
 
     this.#createForm = new CreateForm();
