@@ -134,7 +134,7 @@ export default class CarView extends Component<HTMLDivElement> {
     const { STARTED, DRIVE } = ENGINE_STATUS;
 
     const { id } = this.#car;
-    let time = 0;
+    const startTime = Date.now();
     this.#btnStart.disabled = true;
 
     const result = await manipulateEngine(id, STARTED);
@@ -149,8 +149,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     if (content) {
       const { velocity, distance } = content;
-      time = Math.round(distance / velocity);
-      this.run(time);
+      this.run(Math.round(distance / velocity));
     }
 
     const driveResult = await manipulateEngine(id, DRIVE);
@@ -161,6 +160,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.finish();
 
+    const time = Date.now() - startTime;
     return Promise.resolve({
       time,
       car: this.#car,
