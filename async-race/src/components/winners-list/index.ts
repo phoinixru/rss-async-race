@@ -4,14 +4,17 @@ import { WINNERS_LIST_TITLE } from '../../config';
 import { Winner, StatusCodes, Sort, Order, Car } from '../../types';
 import { assign, elt, entries, errorHandler, keys } from '../../utils';
 import List from '../list';
+import carImage from '../../assets/images/car.svg';
 
 const CssClasses = {
   LIST: 'winners-list',
   TH: 'th',
+  TD: 'td',
   SORTABLE: 'th--sortable',
   ASC: 'th--asc',
   DESC: 'th--desc',
   TABLE: 'table',
+  CAR: 'car__image',
 };
 
 const HEADERS = {
@@ -37,8 +40,17 @@ function isSortField(id: string): id is Sort {
 const trElement = (cells: HTMLTableCellElement[]): HTMLTableRowElement => elt('tr', null, ...cells);
 const thElement = (content: string): HTMLTableCellElement =>
   elt<HTMLTableCellElement>('th', { className: CssClasses.TH, innerHTML: content });
-const tdElement = (content: string): HTMLTableCellElement => elt('td', { innerHTML: content });
+const tdElement = (field: string, content: string): HTMLTableCellElement =>
+  elt('td', { innerHTML: content, className: `${CssClasses.TD} ${CssClasses.TD}--${field}` });
 
+const getCarHtml = (color: string): string => {
+  const carElement = elt<HTMLDivElement>('div', { className: CssClasses.CAR, innerHTML: carImage });
+  const svg = carElement.firstElementChild;
+  if (svg instanceof SVGElement) {
+    svg.style.fill = color;
+  }
+  return carElement.outerHTML;
+};
 export default class WinnersList extends List {
   #winners: Winner[] = [];
 
@@ -116,17 +128,17 @@ export default class WinnersList extends List {
     });
     table.append(trElement(ths));
 
-    this.#winners.forEach((winner) => {
+    this.#winners.forEach((winner, idx) => {
       const { id, wins, time } = winner;
       const { name, color } = this.#cars[id];
       const data: Record<string, string> = {
-        idx: String(id),
-        car: `img ${color}`,
+        idx: String(idx + 1),
+        car: getCarHtml(color),
         name,
         wins: `${wins}`,
         time: time.toFixed(2),
       };
-      const tds = keys(HEADERS).map((fieldId) => tdElement(String(data[fieldId])));
+      const tds = keys(HEADERS).map((fieldId) => tdElement(fieldId, String(data[fieldId])));
 
       table.append(trElement(tds));
     });

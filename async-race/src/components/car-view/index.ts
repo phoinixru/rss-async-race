@@ -4,6 +4,7 @@ import Component from '../component';
 import { Car, DriveResult, ENGINE_STATUS, EngineStatus, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
 import UpdateForm from '../update-form';
+import carImage from '../../assets/images/car.svg';
 
 const CssClasses = {
   CAR: 'car',
@@ -66,7 +67,12 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.#controlsFieldset = elt<HTMLFieldSetElement>('fieldset', { className: CONTROLS });
     this.#carElement = elt<HTMLDivElement>('div', { className: IMAGE });
-    this.#carElement.style.backgroundColor = car.color;
+    this.#carElement.innerHTML = carImage;
+    const svg = this.#carElement.firstElementChild;
+    if (svg instanceof SVGElement) {
+      svg.style.fill = car.color;
+    }
+
     this.#trackElement = elt<HTMLDivElement>('div', { className: CssClasses.TRACK });
 
     this.addEventListeners();

@@ -3,10 +3,19 @@
   border-collapse: collapse;
   margin: auto;
 
-  td {
-    text-align: center;
-    padding: 0.3em 0.5em;
+  .car__image {
+    width: 3em;
+    height: calc(3em * 0.33984375);
   }
+}
+
+.td {
+  text-align: center;
+  padding: 0.3em 0.5em;
+}
+
+.td--name {
+  text-align: left;
 }
 
 .th {
