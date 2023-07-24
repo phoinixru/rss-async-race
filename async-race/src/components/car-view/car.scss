@@ -97,28 +97,32 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.2em 0.2em 0.15em;
+    padding: 0.2em 0.5em 0.15em;
     margin: 0;
     vertical-align: middle;
+    font-size: 0.7em;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+
+    border: 1px solid #fff;
+    border-radius: 0.5em;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
   }
 
   .button i {
-    display: none;
+    font-style: normal;
   }
 
-  .button--update:before {
-    content: '✏️';
-  }
+  .button:disabled {
+    opacity: 0.5;
+    cursor: default;
 
-  .button--remove:before {
-    content: '❌';
-  }
-
-  .button--start:before {
-    content: '▶️';
-  }
-
-  .button--stop:before {
-    content: '⏹️';
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 }

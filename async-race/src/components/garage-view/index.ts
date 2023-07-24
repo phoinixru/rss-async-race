@@ -106,7 +106,7 @@ export default class GarageView extends View {
     });
 
     this.#btnStartRace.addEventListener('click', () => {
-      this.startRace();
+      this.startRace().catch(errorHandler);
     });
 
     this.#btnResetRace.addEventListener('click', () => {
@@ -143,9 +143,11 @@ export default class GarageView extends View {
     this.#btnCreateCars.disabled = false;
   }
 
-  private startRace(): void {
+  private async startRace(): Promise<void> {
     this.#btnStartRace.disabled = true;
     this.disableControls(true);
+
+    await this.stopAllCars();
 
     const racers = this.#carsList.getCars().map((car) => car.drive());
 
@@ -163,6 +165,10 @@ export default class GarageView extends View {
         this.finishRace();
       })
       .catch(errorHandler);
+  }
+
+  private async stopAllCars(): Promise<void> {
+    await Promise.all(this.#carsList.getCars().map((car) => car.stop()));
   }
 
   private finishRace(): void {
