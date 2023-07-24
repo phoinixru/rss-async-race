@@ -1,13 +1,25 @@
 .table {
   border-spacing: 0;
   border-collapse: collapse;
+  margin: auto;
+
+  td {
+    text-align: center;
+    padding: 0.2em 0.5em;
+  }
 }
 
 .th {
-  background: pink;
+  background: rgba(0, 0, 0, .1);
   padding: 0.1em 0.5em;
   border: 1px solid #000;
   text-align: center;
+
+  &::after,
+  &::before {
+    font-size: 0.8em;
+    margin-left: 0.5em;
+  }
 }
 
 .th--sortable {
@@ -26,4 +38,8 @@
     content: '↘';
     display: inline-block;
   }
+}
+
+tr:nth-child(2n) {
+  background: rgba(255, 255, 255, 0.2);
 }

@@ -13,6 +13,7 @@ const CssClasses = {
   IMAGE: 'car__image',
   DRIVE: 'car--drive',
   CRASH: 'car--crash',
+  FINISH: 'car--finish',
   BUTTON: 'button',
   REMOVE: 'button--remove',
   UPDATE: 'button--update',
@@ -124,18 +125,19 @@ export default class CarView extends Component<HTMLDivElement> {
 
   public async drive(): Promise<DriveResult> {
     this.reset();
+    const { STARTED, DRIVE } = ENGINE_STATUS;
 
     const { id } = this.#car;
     let time = 0;
     this.#btnStart.disabled = true;
 
-    const result = await manipulateEngine(id, ENGINE_STATUS.STARTED);
+    const result = await manipulateEngine(id, STARTED);
     const { status, content } = result;
 
     if (status !== StatusCodes.OK) {
       return Promise.reject(new Error('engine malfunction'));
     }
-    this.#engineStatus = ENGINE_STATUS.STARTED;
+    this.#engineStatus = STARTED;
 
     this.#btnStop.disabled = false;
 
@@ -145,11 +147,13 @@ export default class CarView extends Component<HTMLDivElement> {
       this.run(time);
     }
 
-    const driveResult = await manipulateEngine(id, ENGINE_STATUS.DRIVE);
+    const driveResult = await manipulateEngine(id, DRIVE);
     if (driveResult.status === StatusCodes.INTERNAL_SERVER_ERROR) {
       this.crash();
       return Promise.reject(new Error('crash'));
     }
+
+    this.finish();
 
     return Promise.resolve({
       time,
@@ -189,8 +193,13 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.classList.add(CssClasses.CRASH);
   }
 
+  private finish(): void {
+    this.element.classList.add(CssClasses.FINISH);
+  }
+
   private reset(): void {
-    this.element.classList.remove(CssClasses.DRIVE, CssClasses.CRASH);
+    const { DRIVE, CRASH, FINISH } = CssClasses;
+    this.element.classList.remove(DRIVE, CRASH, FINISH);
     this.#carElement.style.left = '';
     this.#carElement.style.transition = '';
   }

@@ -42,7 +42,15 @@
 }
 
 .car--drive {
-  .car__image {}
+  .car__image {
+    transform: skew(10deg);
+  }
+}
+
+.car--finish {
+  .car__image {
+    transform: none;
+  }
 }
 
 .car__image {
@@ -65,5 +73,36 @@
 
   .car--crash & {
     transform: rotate(180deg);
+  }
+}
+
+.car__controls {
+  .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2em 0.2em 0.15em;
+    margin: 0;
+    vertical-align: middle;
+  }
+
+  .button i {
+    display: none;
+  }
+
+  .button--update:before {
+    content: '✏️';
+  }
+
+  .button--remove:before {
+    content: '❌';
+  }
+
+  .button--start:before {
+    content: '▶️';
+  }
+
+  .button--stop:before {
+    content: '⏹️';
   }
 }

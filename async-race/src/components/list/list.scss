@@ -1,0 +1,21 @@
+.list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 2em;
+}
+
+.list__title {
+  width: 50%;
+  margin: 0;
+}
+
+.list__page {
+  width: 50%;
+  text-align: right;
+}
+
+.list__content {
+  width: 100%;
+  padding-top: 1em;
+}

@@ -1,3 +1,4 @@
+import './list.scss';
 import { elt } from '../../utils';
 import Component from '../component';
 import Pagination from '../pagination';
