@@ -69,7 +69,12 @@ export default class AsyncRace implements App {
     const header = new Header();
     const footer = new Footer();
 
-    mainElement.append(tabs, this.#views.garage.getElement(), this.#views.winners.getElement());
+    mainElement.append(
+      tabs,
+      this.#views.garage.getElement(),
+      this.#views.winners.getElement(),
+      this.#views.help.getElement()
+    );
 
     this.#wrapper.append(header.getElement(), mainElement, footer.getElement());
     document.body.append(this.#wrapper);
