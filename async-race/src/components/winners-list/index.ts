@@ -102,7 +102,7 @@ export default class WinnersList extends List {
       return;
     }
 
-    console.log(message);
+    throw new Error(message);
   }
 
   private renderContent(): void {

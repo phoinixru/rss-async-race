@@ -156,9 +156,7 @@ export default class GarageView extends View {
         this.announceTheWinner(result);
         return saveWinner(result);
       })
-      .catch(() => {
-        console.log('All cars crashed');
-      });
+      .catch(errorHandler);
 
     Promise.allSettled(racers)
       .then(() => {
