@@ -20,7 +20,15 @@ export type Engine = {
   distance: number;
 };
 
-export type EngineStatus = 'started' | 'stopped' | 'drive';
+export const ENGINE_STATUS = {
+  STARTED: 'started',
+  STOPPED: 'stopped',
+  DRIVE: 'drive',
+};
+
+type ValueOf<T> = T[keyof T];
+
+export type EngineStatus = ValueOf<typeof ENGINE_STATUS>;
 
 export type Sort = 'id' | 'wins' | 'time';
 

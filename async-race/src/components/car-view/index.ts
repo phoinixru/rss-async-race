@@ -1,7 +1,7 @@
 import './car.scss';
 import { dispatch, elt, errorHandler } from '../../utils';
 import Component from '../component';
-import { Car, DriveResult, EngineStatus, StatusCodes } from '../../types';
+import { Car, DriveResult, ENGINE_STATUS, EngineStatus, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
 import UpdateForm from '../update-form';
 
@@ -34,7 +34,7 @@ const BTN_STOP_TEXT = 'Stop';
 export default class CarView extends Component<HTMLDivElement> {
   #car: Car;
 
-  #engineStatus: EngineStatus = 'stopped';
+  #engineStatus: EngineStatus = ENGINE_STATUS.STOPPED;
 
   #btnRemove: HTMLButtonElement;
 
@@ -129,13 +129,13 @@ export default class CarView extends Component<HTMLDivElement> {
     let time = 0;
     this.#btnStart.disabled = true;
 
-    const result = await manipulateEngine(id, 'started');
+    const result = await manipulateEngine(id, ENGINE_STATUS.STARTED);
     const { status, content } = result;
 
     if (status !== StatusCodes.OK) {
       return Promise.reject(new Error('engine malfunction'));
     }
-    this.#engineStatus = 'started';
+    this.#engineStatus = ENGINE_STATUS.STARTED;
 
     this.#btnStop.disabled = false;
 
@@ -145,7 +145,7 @@ export default class CarView extends Component<HTMLDivElement> {
       this.run(time);
     }
 
-    const driveResult = await manipulateEngine(id, 'drive');
+    const driveResult = await manipulateEngine(id, ENGINE_STATUS.DRIVE);
     if (driveResult.status === StatusCodes.INTERNAL_SERVER_ERROR) {
       this.crash();
       return Promise.reject(new Error('crash'));
@@ -161,9 +161,9 @@ export default class CarView extends Component<HTMLDivElement> {
     const { id } = this.#car;
     this.#btnStop.disabled = true;
 
-    if (this.#engineStatus !== 'stopped') {
-      await manipulateEngine(id, 'stopped');
-      this.#engineStatus = 'stopped';
+    if (this.#engineStatus !== ENGINE_STATUS.STOPPED) {
+      await manipulateEngine(id, ENGINE_STATUS.STOPPED);
+      this.#engineStatus = ENGINE_STATUS.STOPPED;
       this.reset();
     }
 
@@ -177,6 +177,10 @@ export default class CarView extends Component<HTMLDivElement> {
   }
 
   private crash(): void {
+    if (this.#engineStatus === ENGINE_STATUS.STOPPED) {
+      return;
+    }
+
     const currentLeft = parseInt(getComputedStyle(this.#carElement).left, 10);
     const trackWidth = this.#trackElement.clientWidth;
     this.#carElement.style.left = `${(100 * currentLeft) / trackWidth}%`;
