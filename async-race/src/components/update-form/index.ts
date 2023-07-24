@@ -59,6 +59,11 @@ export default class UpdateForm extends Form {
     this.reset();
   }
 
+  public reset(): void {
+    this.element.reset();
+    this.#inputId.value = '';
+  }
+
   public loadForm(car: Car): void {
     const { id, name, color } = car;
 
