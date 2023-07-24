@@ -26,6 +26,8 @@ export default class Pagination extends Component<HTMLFieldSetElement> {
 
   #totalPages = 0;
 
+  #totalItems = 0;
+
   #perPage: number;
 
   #subscribers: PageChangeListener[] = [];
@@ -58,7 +60,8 @@ export default class Pagination extends Component<HTMLFieldSetElement> {
   }
 
   public updateCounts(totalItems: number): void {
-    this.#totalPages = Math.ceil(totalItems / this.#perPage);
+    this.#totalItems = totalItems;
+    this.#totalPages = Math.ceil(this.#totalItems / this.#perPage);
     if (this.#currentPage > this.#totalPages) {
       this.#currentPage = Math.max(FIRST_PAGE, this.#totalPages);
       this.setPage();
@@ -95,5 +98,10 @@ export default class Pagination extends Component<HTMLFieldSetElement> {
 
   public disable(disabled: boolean): void {
     this.element.disabled = disabled;
+  }
+
+  public changePageSize(newSize: number): void {
+    this.#perPage = newSize;
+    this.updateCounts(this.#totalItems);
   }
 }

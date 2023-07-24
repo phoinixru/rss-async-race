@@ -47,7 +47,7 @@ export default class CarsList extends List {
       return;
     }
 
-    console.log(message);
+    throw new Error(message);
   }
 
   private renderContent(): void {
@@ -92,5 +92,11 @@ export default class CarsList extends List {
   public disableControls(disable: boolean): void {
     this.#cars.forEach((car) => car.disableControls(disable));
     this.pagination.disable(disable);
+  }
+
+  public changePageSize(newSize: number): void {
+    this.perPage = newSize;
+    this.pagination.changePageSize(newSize);
+    this.updateList();
   }
 }

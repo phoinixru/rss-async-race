@@ -2,10 +2,10 @@ import './garage.scss';
 import View from '../view';
 import CreateForm from '../create-form';
 import UpdateForm from '../update-form';
-import { CARS_PER_PAGE, RANDOM_CARS_NUMBER } from '../../config';
+import { CARS_PER_PAGE, FAIR_CARS_PER_PAGE, RANDOM_CARS_NUMBER } from '../../config';
 import CarsList from '../cars-list';
 import { dispatch, elt, errorHandler, getRandomColor, getRandomName } from '../../utils';
-import { createCar, createWinner, getWinner, updateWinner } from '../../api';
+import { checkExtraHost, createCar, createWinner, getWinner, updateWinner } from '../../api';
 import { DriveResult, StatusCodes } from '../../types';
 
 const CssClasses = {
@@ -16,11 +16,14 @@ const CssClasses = {
   CONTROLS: 'fieldset garage__controls',
   MODAL: 'modal',
   SHOW: 'modal--show',
+  FAIR: 'fair',
+  FAIR_SHOW: 'fair--show',
 };
 
 const BTN_CREATE_CARS_TEXT = `Add ${RANDOM_CARS_NUMBER} cars`;
 const BTN_START_RACE_TEXT = 'Race';
 const BTN_RESET_RACE_TEXT = 'Reset';
+const FAIR_PLAY_TEXT = 'Fair Race (check help)';
 
 async function saveWinner(result: DriveResult): Promise<void> {
   const {
@@ -70,8 +73,12 @@ export default class GarageView extends View {
 
   #modal: HTMLDivElement;
 
+  #fairToggle: HTMLLabelElement;
+
+  #fairCheckbox: HTMLInputElement;
+
   constructor(tabLabel: string) {
-    const { BUTTON, GARAGE, START, RESET, MODAL } = CssClasses;
+    const { BUTTON, GARAGE, START, RESET, MODAL, FAIR } = CssClasses;
 
     super(tabLabel);
     this.element.classList.add(GARAGE);
@@ -85,9 +92,12 @@ export default class GarageView extends View {
     this.#btnStartRace = elt<HTMLButtonElement>('button', { className: START }, BTN_START_RACE_TEXT);
     this.#btnResetRace = elt<HTMLButtonElement>('button', { className: RESET }, BTN_RESET_RACE_TEXT);
     this.#modal = elt<HTMLDivElement>('div', { className: MODAL });
+    this.#fairCheckbox = elt<HTMLInputElement>('input', { type: 'checkbox' });
+    this.#fairToggle = elt<HTMLLabelElement>('label', { className: FAIR }, this.#fairCheckbox, FAIR_PLAY_TEXT);
 
     this.addEventListeners();
     this.render();
+    this.checkServer().catch(errorHandler);
   }
 
   private addEventListeners(): void {
@@ -102,11 +112,13 @@ export default class GarageView extends View {
     this.#btnResetRace.addEventListener('click', () => {
       this.resetRace().catch(errorHandler);
     });
+
+    this.#fairCheckbox.addEventListener('change', (event) => this.playFair(event));
   }
 
   private render(): void {
     this.#btnResetRace.disabled = true;
-    this.#controls.append(this.#btnStartRace, this.#btnResetRace, this.#btnCreateCars);
+    this.#controls.append(this.#btnStartRace, this.#btnResetRace, this.#btnCreateCars, this.#fairToggle);
 
     this.element.append(
       this.#createForm.getElement(),
@@ -184,5 +196,21 @@ export default class GarageView extends View {
 
     this.#modal.innerHTML = `${name} finished first in ${timeSec}&nbsp;sec`;
     this.#modal.classList.add(CssClasses.SHOW);
+  }
+
+  private async checkServer(): Promise<void> {
+    const canPlayFair = await checkExtraHost().catch(() => false);
+
+    this.#fairToggle.classList.toggle(CssClasses.FAIR_SHOW, !canPlayFair);
+  }
+
+  private playFair(event: Event): void {
+    const { target } = event;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const playFair = target.checked;
+    this.#carsList.changePageSize(playFair ? FAIR_CARS_PER_PAGE : CARS_PER_PAGE);
   }
 }

@@ -1,8 +1,6 @@
-import { SERVER_HOST, SERVER_PORT } from './config';
+import { ENGINE_SPEED, EXTRA_HOST, SERVER_HOSTS, SERVER_PORT } from './config';
 import { Car, Engine, EngineStatus, Winner, StatusCodes, Sort, Order } from './types';
 import { assign, stringify } from './utils';
-
-const apiUrl = `${SERVER_HOST}:${SERVER_PORT}`;
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -38,9 +36,27 @@ const getEndpoint = (endpoint: Endpoints, id: number): string => endpoint.replac
 
 const requestHeaders = { 'Content-Type': 'application/json' };
 
+async function checkExtraHost(): Promise<boolean> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 1000);
+  const url = `http://${EXTRA_HOST}:${SERVER_PORT}/db`;
+  const result = await fetch(url, { method: 'HEAD', signal: controller.signal });
+  const { status } = result;
+
+  clearTimeout(timeoutId);
+  if ([StatusCodes.OK].includes(status)) {
+    SERVER_HOSTS.push(EXTRA_HOST);
+    return true;
+  }
+  return false;
+}
+
+let requestIndex = 0;
 async function apiRequest<T extends ResponseContent>(params: RequestParams): Promise<ApiResponse<T>> {
   const { method, endpoint, dataParams, queryParams } = params;
-  const url = `${apiUrl}${endpoint}${queryParams ? `?${queryParams}` : ''}`;
+  const host = SERVER_HOSTS[requestIndex % SERVER_HOSTS.length];
+  requestIndex += 1;
+  const url = `http://${host}:${SERVER_PORT}${endpoint}${queryParams ? `?${queryParams}` : ''}`;
   const options = { method };
 
   if (dataParams) {
@@ -86,6 +102,14 @@ async function deleteCar(id: number): Promise<ApiResponse<Empty>> {
   const endpoint = getEndpoint(Endpoints.CAR, id);
   const params: RequestParams = { method: 'DELETE', endpoint };
   const result = await apiRequest<Empty>(params);
+
+  return result;
+}
+
+async function getCar(id: number): Promise<ApiResponse<Car>> {
+  const endpoint = getEndpoint(Endpoints.CAR, id);
+  const params: RequestParams = { method: 'GET', endpoint };
+  const result = await apiRequest<Car>(params);
 
   return result;
 }
@@ -149,6 +173,8 @@ async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiRe
   const query = { id: String(id), status };
   if (status === 'stopped') {
     assign(query, { speed: '0' });
+  } else if (ENGINE_SPEED >= 0) {
+    assign(query, { speed: `${ENGINE_SPEED}` });
   }
   const queryParams = new URLSearchParams(query).toString();
   const params: RequestParams = { method: 'PATCH', endpoint: Endpoints.ENGINE, queryParams };
@@ -158,7 +184,9 @@ async function manipulateEngine(id: number, status: EngineStatus): Promise<ApiRe
 }
 
 export {
+  checkExtraHost,
   getCars,
+  getCar,
   createCar,
   updateCar,
   deleteCar,

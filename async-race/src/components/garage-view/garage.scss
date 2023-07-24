@@ -4,6 +4,22 @@
 
 .garage .garage__controls {
   padding-top: 1em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.fair {
+  margin-left: 1em;
+  display: none;
+
+  input {
+    margin-right: 0.5em;
+  }
+}
+
+.fair--show {
+  display: inline;
 }
 
 .modal {
