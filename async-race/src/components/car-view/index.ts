@@ -1,5 +1,5 @@
 import './car.scss';
-import { dispatch, elt, errorHandler } from '../../utils';
+import { dispatch, elt } from '../../utils';
 import Component from '../component';
 import { Car, DriveResult, ENGINE_STATUS, EngineStatus, StatusCodes } from '../../types';
 import { deleteCar, deleteWinner, manipulateEngine } from '../../api';
@@ -12,6 +12,7 @@ const CssClasses = {
   NAME: 'car__name',
   TRACK: 'car__track',
   IMAGE: 'car__image',
+  RESULT: 'car__result',
   DRIVE: 'car--drive',
   CRASH: 'car--crash',
   FINISH: 'car--finish',
@@ -52,8 +53,12 @@ export default class CarView extends Component<HTMLDivElement> {
 
   #trackElement: HTMLDivElement;
 
+  #resultElement: HTMLDivElement;
+
+  #run = 0;
+
   constructor(car: Car) {
-    const { CAR, UPDATE, REMOVE, START, STOP, CONTROLS, IMAGE } = CssClasses;
+    const { CAR, UPDATE, REMOVE, START, STOP, CONTROLS, IMAGE, TRACK, RESULT } = CssClasses;
 
     const element = elt<HTMLDivElement>('div', { className: CAR });
     super(element);
@@ -73,22 +78,25 @@ export default class CarView extends Component<HTMLDivElement> {
       svg.style.fill = car.color;
     }
 
-    this.#trackElement = elt<HTMLDivElement>('div', { className: CssClasses.TRACK });
+    this.#trackElement = elt<HTMLDivElement>('div', { className: TRACK });
+    this.#resultElement = elt<HTMLDivElement>('div', { className: RESULT });
 
     this.addEventListeners();
     this.render();
   }
 
   private addEventListeners(): void {
+    const ignore = (): boolean => false;
+
     this.#btnRemove.addEventListener('click', () => {
-      this.removeCar().catch(errorHandler);
+      this.removeCar().catch(ignore);
     });
     this.#btnUpdate.addEventListener('click', () => this.updateCar());
     this.#btnStart.addEventListener('click', () => {
-      this.drive().catch(errorHandler);
+      this.drive().catch(ignore);
     });
     this.#btnStop.addEventListener('click', () => {
-      this.stop().catch(errorHandler);
+      this.stop().catch(ignore);
     });
   }
 
@@ -100,7 +108,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.#trackElement.append(this.#carElement);
 
-    this.element.append(carName, this.#controlsFieldset, this.#trackElement);
+    this.element.append(carName, this.#controlsFieldset, this.#resultElement, this.#trackElement);
   }
 
   private async removeCar(): Promise<void> {
@@ -132,10 +140,11 @@ export default class CarView extends Component<HTMLDivElement> {
   public async drive(): Promise<DriveResult> {
     this.reset();
     const { STARTED, DRIVE } = ENGINE_STATUS;
-
     const { id } = this.#car;
     const startTime = Date.now();
     this.#btnStart.disabled = true;
+    this.#run += 1;
+    const currentRun = this.#run;
 
     const result = await manipulateEngine(id, STARTED);
     const { status, content } = result;
@@ -144,7 +153,6 @@ export default class CarView extends Component<HTMLDivElement> {
       return Promise.reject(new Error('engine malfunction'));
     }
     this.#engineStatus = STARTED;
-
     this.#btnStop.disabled = false;
 
     if (content) {
@@ -153,27 +161,29 @@ export default class CarView extends Component<HTMLDivElement> {
     }
 
     const driveResult = await manipulateEngine(id, DRIVE);
+    if (currentRun !== this.#run) {
+      return Promise.resolve({ time: -1, car: this.#car });
+    }
+
     if (driveResult.status === StatusCodes.INTERNAL_SERVER_ERROR) {
       this.crash();
       return Promise.reject(new Error('crash'));
     }
 
-    this.finish();
-
     const time = Date.now() - startTime;
-    return Promise.resolve({
-      time,
-      car: this.#car,
-    });
+    this.finish(time);
+
+    return Promise.resolve({ time, car: this.#car });
   }
 
   public async stop(): Promise<void> {
     const { id } = this.#car;
+    const { STOPPED } = ENGINE_STATUS;
     this.#btnStop.disabled = true;
 
-    if (this.#engineStatus !== ENGINE_STATUS.STOPPED) {
-      await manipulateEngine(id, ENGINE_STATUS.STOPPED);
-      this.#engineStatus = ENGINE_STATUS.STOPPED;
+    if (this.#engineStatus !== STOPPED) {
+      await manipulateEngine(id, STOPPED);
+      this.#engineStatus = STOPPED;
       this.reset();
     }
 
@@ -197,10 +207,16 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#carElement.style.transition = 'none';
     this.element.classList.remove(CssClasses.DRIVE);
     this.element.classList.add(CssClasses.CRASH);
+    this.#resultElement.innerHTML = '';
   }
 
-  private finish(): void {
+  private finish(time: number): void {
+    if (this.#engineStatus === ENGINE_STATUS.STOPPED) {
+      return;
+    }
+
     this.element.classList.add(CssClasses.FINISH);
+    this.#resultElement.innerHTML = (time / 1000).toFixed(2);
   }
 
   private reset(): void {
