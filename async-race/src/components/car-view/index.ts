@@ -230,6 +230,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.classList.remove(DRIVE, CRASH, FINISH);
     this.#carElement.style.left = '';
     this.#carElement.style.transition = '';
+    this.blur();
   }
 
   private blur(time = 0): void {
