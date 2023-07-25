@@ -34,6 +34,9 @@ const BTN_UPDATE_TEXT = 'Update';
 const BTN_START_TEXT = 'Start';
 const BTN_STOP_TEXT = 'Stop';
 
+const MAX_TIME = 10000;
+const MAX_BLUR = 15;
+
 export default class CarView extends Component<HTMLDivElement> {
   #car: Car;
 
@@ -50,6 +53,8 @@ export default class CarView extends Component<HTMLDivElement> {
   #controlsFieldset: HTMLFieldSetElement;
 
   #carElement: HTMLDivElement;
+
+  #carImage: SVGElement;
 
   #trackElement: HTMLDivElement;
 
@@ -73,10 +78,8 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#controlsFieldset = elt<HTMLFieldSetElement>('fieldset', { className: CONTROLS });
     this.#carElement = elt<HTMLDivElement>('div', { className: IMAGE });
     this.#carElement.innerHTML = carImage;
-    const svg = this.#carElement.firstElementChild;
-    if (svg instanceof SVGElement) {
-      svg.style.fill = car.color;
-    }
+    this.#carImage = this.#carElement.firstElementChild as SVGElement;
+    this.#carImage.style.fill = car.color;
 
     this.#trackElement = elt<HTMLDivElement>('div', { className: TRACK });
     this.#resultElement = elt<HTMLDivElement>('div', { className: RESULT });
@@ -194,6 +197,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#carElement.style.left = '100%';
     this.#carElement.style.transitionDuration = `${time}ms`;
     this.element.classList.add(CssClasses.DRIVE);
+    this.blur(time);
   }
 
   private crash(): void {
@@ -208,6 +212,7 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.classList.remove(CssClasses.DRIVE);
     this.element.classList.add(CssClasses.CRASH);
     this.#resultElement.innerHTML = '';
+    this.blur();
   }
 
   private finish(time: number): void {
@@ -217,6 +222,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.element.classList.add(CssClasses.FINISH);
     this.#resultElement.innerHTML = (time / 1000).toFixed(2);
+    this.blur();
   }
 
   private reset(): void {
@@ -224,5 +230,14 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.classList.remove(DRIVE, CRASH, FINISH);
     this.#carElement.style.left = '';
     this.#carElement.style.transition = '';
+  }
+
+  private blur(time = 0): void {
+    let filter = '';
+    if (time) {
+      const length = Math.round((MAX_BLUR * (MAX_TIME - time)) / MAX_TIME);
+      filter = `drop-shadow(-${length}px 0 3px ${this.#car.color})`;
+    }
+    this.#carImage.style.filter = filter;
   }
 }
