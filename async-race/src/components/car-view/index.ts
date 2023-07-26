@@ -149,13 +149,13 @@ export default class CarView extends Component<HTMLDivElement> {
     this.#run += 1;
     const currentRun = this.#run;
 
+    this.#engineStatus = STARTED;
     const result = await manipulateEngine(id, STARTED);
     const { status, content } = result;
 
     if (status !== StatusCodes.OK) {
       return Promise.reject(new Error('engine malfunction'));
     }
-    this.#engineStatus = STARTED;
     this.#btnStop.disabled = false;
 
     if (content) {
@@ -163,6 +163,7 @@ export default class CarView extends Component<HTMLDivElement> {
       this.run(Math.round(distance / velocity));
     }
 
+    this.#engineStatus = DRIVE;
     const driveResult = await manipulateEngine(id, DRIVE);
     if (currentRun !== this.#run) {
       return Promise.resolve({ time: -1, car: this.#car });
@@ -184,11 +185,9 @@ export default class CarView extends Component<HTMLDivElement> {
     const { STOPPED } = ENGINE_STATUS;
     this.#btnStop.disabled = true;
 
-    if (this.#engineStatus !== STOPPED) {
-      await manipulateEngine(id, STOPPED);
-      this.#engineStatus = STOPPED;
-      this.reset();
-    }
+    await manipulateEngine(id, STOPPED);
+    this.#engineStatus = STOPPED;
+    this.reset();
 
     this.#btnStart.disabled = false;
   }
@@ -201,9 +200,7 @@ export default class CarView extends Component<HTMLDivElement> {
   }
 
   private crash(): void {
-    if (this.#engineStatus === ENGINE_STATUS.STOPPED) {
-      return;
-    }
+    this.#engineStatus = ENGINE_STATUS.STOPPED;
 
     const currentLeft = parseInt(getComputedStyle(this.#carElement).left, 10);
     const trackWidth = this.#trackElement.clientWidth;
@@ -220,6 +217,7 @@ export default class CarView extends Component<HTMLDivElement> {
       return;
     }
 
+    this.#engineStatus = ENGINE_STATUS.STOPPED;
     this.element.classList.add(CssClasses.FINISH);
     this.#resultElement.innerHTML = (time / 1000).toFixed(2);
     this.blur();
@@ -240,5 +238,9 @@ export default class CarView extends Component<HTMLDivElement> {
       filter = `drop-shadow(-${length}px 0 3px ${this.#car.color})`;
     }
     this.#carImage.style.filter = filter;
+  }
+
+  public getEngineStatus(): EngineStatus {
+    return this.#engineStatus;
   }
 }

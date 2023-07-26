@@ -6,7 +6,7 @@ import { CARS_PER_PAGE, FAIR_CARS_PER_PAGE, RANDOM_CARS_NUMBER } from '../../con
 import CarsList from '../cars-list';
 import { dispatch, elt, errorHandler, getRandomColor, getRandomName } from '../../utils';
 import { checkExtraHost, createCar, createWinner, getWinner, updateWinner } from '../../api';
-import { DriveResult, StatusCodes } from '../../types';
+import { DriveResult, ENGINE_STATUS, StatusCodes } from '../../types';
 
 const CssClasses = {
   GARAGE: 'garage',
@@ -14,6 +14,8 @@ const CssClasses = {
   START: 'button button--start',
   RESET: 'button button--reset',
   CONTROLS: 'fieldset garage__controls',
+  ERROR: 'error',
+  ERROR_SHOW: 'error--show',
   MODAL: 'modal',
   SHOW: 'modal--show',
   FAIR: 'fair',
@@ -24,6 +26,8 @@ const BTN_CREATE_CARS_TEXT = `Add ${RANDOM_CARS_NUMBER} cars`;
 const BTN_START_RACE_TEXT = 'Race';
 const BTN_RESET_RACE_TEXT = 'Reset';
 const FAIR_PLAY_TEXT = 'Fair Race (check help)';
+const CARS_NOT_READY_ERROR = `Some cars reporting they are moving, \
+please wait when they finish before starting the race`;
 
 async function saveWinner(result: DriveResult): Promise<void> {
   const {
@@ -77,6 +81,8 @@ export default class GarageView extends View {
 
   #fairCheckbox: HTMLInputElement;
 
+  #errorMessage: HTMLDivElement;
+
   constructor(tabLabel: string) {
     const { BUTTON, GARAGE, START, RESET, MODAL, FAIR } = CssClasses;
 
@@ -88,6 +94,7 @@ export default class GarageView extends View {
     this.#carsList = new CarsList(CARS_PER_PAGE);
 
     this.#controls = elt<HTMLFieldSetElement>('fieldset', { className: CssClasses.CONTROLS });
+    this.#errorMessage = elt<HTMLDivElement>('div', { className: CssClasses.ERROR });
     this.#btnCreateCars = elt<HTMLButtonElement>('button', { className: BUTTON }, BTN_CREATE_CARS_TEXT);
     this.#btnStartRace = elt<HTMLButtonElement>('button', { className: START }, BTN_START_RACE_TEXT);
     this.#btnResetRace = elt<HTMLButtonElement>('button', { className: RESET }, BTN_RESET_RACE_TEXT);
@@ -124,6 +131,7 @@ export default class GarageView extends View {
       this.#createForm.getElement(),
       this.#updateForm.getElement(),
       this.#controls,
+      this.#errorMessage,
       this.#carsList.getElement(),
       this.#modal
     );
@@ -144,6 +152,10 @@ export default class GarageView extends View {
   }
 
   private async startRace(): Promise<void> {
+    if (!this.canStartRace()) {
+      return;
+    }
+
     this.#btnStartRace.disabled = true;
     this.disableControls(true);
 
@@ -216,5 +228,19 @@ export default class GarageView extends View {
 
     const playFair = target.checked;
     this.#carsList.changePageSize(playFair ? FAIR_CARS_PER_PAGE : CARS_PER_PAGE);
+  }
+
+  private canStartRace(): boolean {
+    const carsReady = this.#carsList
+      .getCars()
+      .map((car) => car.getEngineStatus())
+      .every((status) => status === ENGINE_STATUS.STOPPED);
+
+    if (!carsReady) {
+      this.#errorMessage.innerHTML = CARS_NOT_READY_ERROR;
+    }
+    this.#errorMessage.classList.toggle(CssClasses.ERROR_SHOW, !carsReady);
+
+    return carsReady;
   }
 }

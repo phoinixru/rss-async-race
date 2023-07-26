@@ -39,3 +39,13 @@
 .modal--show {
   display: block;
 }
+
+.error {
+  display: none;
+  margin-top: 0.5em;
+  font-size: 0.8em;
+}
+
+.error--show {
+  display: block;
+}
