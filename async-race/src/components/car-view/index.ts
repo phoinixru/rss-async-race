@@ -29,10 +29,10 @@ const button = (className: string, text = ''): HTMLButtonElement => {
   return btn;
 };
 
-const BTN_REMOVE_TEXT = 'Remove';
-const BTN_UPDATE_TEXT = 'Update';
-const BTN_START_TEXT = 'Start';
-const BTN_STOP_TEXT = 'Stop';
+const BTN_REMOVE_TEXT = 'Delete';
+const BTN_UPDATE_TEXT = 'Edit';
+const BTN_START_TEXT = '⏵︎';
+const BTN_STOP_TEXT = '⏹︎';
 
 const MAX_TIME = 10000;
 const MAX_BLUR = 15;
@@ -194,8 +194,9 @@ export default class CarView extends Component<HTMLDivElement> {
 
   private run(time: number): void {
     this.#carElement.style.left = '100%';
-    this.#carElement.style.transitionDuration = `${time}ms`;
+    this.#carElement.style.setProperty('--speed', `${time}ms`);
     this.element.classList.add(CssClasses.DRIVE);
+    this.element.style.setProperty('--speed', `${Math.floor(time / 10)}ms`);
     this.blur(time);
   }
 
