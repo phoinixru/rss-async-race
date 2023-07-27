@@ -13,6 +13,7 @@ const CssClasses = {
   TRACK: 'car__track',
   IMAGE: 'car__image',
   RESULT: 'car__result',
+  ROAD: 'car__road',
   DRIVE: 'car--drive',
   CRASH: 'car--crash',
   FINISH: 'car--finish',
@@ -60,6 +61,8 @@ export default class CarView extends Component<HTMLDivElement> {
 
   #resultElement: HTMLDivElement;
 
+  #roadElement: HTMLSpanElement;
+
   #run = 0;
 
   constructor(car: Car) {
@@ -83,6 +86,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.#trackElement = elt<HTMLDivElement>('div', { className: TRACK });
     this.#resultElement = elt<HTMLDivElement>('div', { className: RESULT });
+    this.#roadElement = elt<HTMLSpanElement>('span', { className: CssClasses.ROAD });
 
     this.addEventListeners();
     this.render();
@@ -111,7 +115,7 @@ export default class CarView extends Component<HTMLDivElement> {
 
     this.#trackElement.append(this.#carElement);
 
-    this.element.append(carName, this.#controlsFieldset, this.#resultElement, this.#trackElement);
+    this.element.append(carName, this.#controlsFieldset, this.#resultElement, this.#trackElement, this.#roadElement);
   }
 
   private async removeCar(): Promise<void> {
@@ -194,9 +198,8 @@ export default class CarView extends Component<HTMLDivElement> {
 
   private run(time: number): void {
     this.#carElement.style.left = '100%';
-    this.#carElement.style.setProperty('--speed', `${time}ms`);
     this.element.classList.add(CssClasses.DRIVE);
-    this.element.style.setProperty('--speed', `${Math.floor(time / 10)}ms`);
+    this.element.style.setProperty('--speed', `${Math.floor(time)}ms`);
     this.blur(time);
   }
 
@@ -229,6 +232,11 @@ export default class CarView extends Component<HTMLDivElement> {
     this.element.classList.remove(DRIVE, CRASH, FINISH);
     this.#carElement.style.left = '';
     this.#carElement.style.transition = '';
+    this.#roadElement.style.animation = 'none';
+    this.element.style.setProperty('--speed', null);
+    requestAnimationFrame(() => {
+      this.#roadElement.style.animation = '';
+    });
     this.blur();
   }
 

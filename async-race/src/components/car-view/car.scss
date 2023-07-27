@@ -5,36 +5,9 @@
   flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 0.5em;
-  border-bottom: 2px solid rgba(255, 255, 255, .5);
   perspective: 100px;
   perspective-origin: center top;
   overflow: hidden;
-
-  &:before {
-    content: '';
-    top: 50%;
-    width: 150%;
-    left: -25%;
-    position: absolute;
-
-    bottom: 0;
-    background: repeating-linear-gradient(90deg,
-        var(--line-color),
-        var(--line-color) 2px,
-        transparent 2px,
-        transparent 30px);
-    transform: rotateX(60deg);
-    z-index: -10;
-  }
-
-  &--drive:before {
-    animation: var(--speed) linear infinite lines;
-  }
-
-  &--crash:before,
-  &--finish:before {
-    animation-play-state: paused;
-  }
 
   .button--start,
   .button--stop {
@@ -87,19 +60,55 @@
 .car__track {
   position: relative;
   width: 100%;
-  height: 2.5em;
+  height: 3em;
   display: flex;
   order: 2;
   align-items: end;
 
   margin-right: 5.5em;
+}
+
+.car__road {
+  top: 50%;
+  width: 200%;
+  left: 0;
+  position: absolute;
+  border: 1px solid var(--line-color);
+
+  bottom: 4px;
+  background: repeating-linear-gradient(90deg,
+      var(--line-color),
+      var(--line-color) 2px,
+      transparent 2px,
+      transparent 30px);
+  transform: rotateX(45deg);
+  z-index: -10;
+  animation: var(--speed) lines linear both;
+
+  .car--drive & {
+    animation-play-state: running;
+  }
+
+  .car--crash &,
+  .car--finish & {
+    animation-play-state: paused;
+  }
 
   &:after {
-    content: '🏁';
+    content: '';
     position: absolute;
-    right: 0;
-    font-size: 2em;
+    right: 5.5em;
     z-index: -1;
+    height: 100%;
+    width: 30px;
+
+    background: #fff;
+    background-image: linear-gradient(45deg, rgba(0, 0, 0) 25%,
+        transparent 0, transparent 75%, rgba(0, 0, 0) 0),
+      linear-gradient(45deg, rgba(0, 0, 0) 25%,
+        transparent 0, transparent 75%, rgba(0, 0, 0) 0);
+    background-position: 0 0, 25px 25px;
+    background-size: 10px 10px;
   }
 }
 
@@ -108,6 +117,7 @@
   height: calc(5em * 0.33984375);
   position: relative;
   left: 0;
+  bottom: 25%;
   position: relative;
   z-index: 10;
 
@@ -194,10 +204,12 @@
 
 @keyframes lines {
   from {
-    transform: rotateX(60deg) translateX(0);
+    // transform: rotateX(60deg) translateX(0);
+    left: 0;
   }
 
   to {
-    transform: rotateX(60deg) translateX(-30px);
+    left: -100%;
+    // transform: rotateX(60deg) translateX(-30px);
   }
 }
