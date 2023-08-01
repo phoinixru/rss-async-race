@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config ./webpack.config.js --mode=production --node-env=production",
-    "serve": "webpack serve --open --config ./webpack.config.js --mode=development --node-env=development"
+    "serve": "webpack serve --open --config ./webpack.config.js --mode=development --node-env=development",
+    "publish": "npm run build && gh-pages -d dist -m \"chore: update deploy\""
   },
   "author": "Vitaly Kukushkin",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-webpack-plugin": "^4.0.1",
+    "gh-pages": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
     "prettier": "^3.0.0",
     "sass": "^1.63.6",
